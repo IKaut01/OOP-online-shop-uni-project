@@ -1,0 +1,628 @@
+//TUDOROIU EDARD-MIHAI 1059E
+
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+ofstream ic("istoric_comenzi.out", ios::out | ios::app);
+
+//adaugare in cos
+
+void meniu_secundar()
+{
+    cout << "Doriti sa faceti alta operatiune?" << endl;
+    cout << "########################" << endl;
+    cout << "1-da" << endl;
+    cout << "0-nu" << endl;
+    cout << "########################" << endl;
+
+};
+
+class Comanda
+{
+    string stare_comanda;
+    int ok = 0;
+    //Costructor
+public:
+    Comanda()
+    {
+        stare_comanda = "Neplasata";
+        ok = 0;
+    }
+    Comanda(string stare_comanda,int ok)
+    {
+        this->stare_comanda = stare_comanda;
+        this->ok = ok;
+    }
+    //getter/setter
+    string get_stare_comanda()
+    {
+            return stare_comanda;
+    }
+    void set_get_comanda(string stare_comanda)
+    {
+        this -> stare_comanda = stare_comanda;
+    }
+    int get_ok()
+    {
+        return ok;
+    }
+    void set_ok(int ok)
+    {
+        this->ok = ok;
+    }
+    //Comanda
+    void operator ++ () {
+        switch (ok) {
+        case 0:
+            stare_comanda = "In procesare";
+            ok++;
+                break;
+        case 1:
+            stare_comanda = "Livrata";
+            ok++;
+            break;
+
+        }
+    }
+    void operator -- () {
+        switch (ok) {
+        case 2:
+            stare_comanda = "In procesare";
+            ok--;
+            break;
+        case 1:
+            stare_comanda = "Neplasata";
+            ok--;
+            break;
+        }
+    }
+
+
+};
+
+class Produs:public Comanda
+{
+    int x = 0;
+    int id;
+    string nume;
+    string descriere;
+    float discount;
+public:
+    Produs()
+    {
+        id = 1000;
+        nume = "Necunoscut";
+        descriere = "Necunoscut";
+        discount = 0;
+    };
+    Produs(int id, string nume, string descriere, float discount)
+    {
+        this->id = id;
+        this->nume = nume;
+        this->descriere = descriere;
+        this->discount = discount;
+    }
+    ~Produs(){}
+    void set_x(int x)
+    {
+        this->x = x;
+    }
+    void set_id(int id)
+    {
+        this->id = id;
+    }
+
+    int get_id()
+    {
+        if (id >= 1000)
+            return id;
+        else
+            cout << "Id-ul trebuie sa fie minim 1000";
+    }
+    void set_nume(string n)
+    {
+        nume = n;
+    }
+    string get_nume()
+    {
+        return nume;
+
+    }
+    void set_descriere(string descriere)
+    {
+        this->descriere = descriere;
+
+    }
+    string get_descriere()
+    {
+        return descriere;
+
+    }
+    void set_discount(float discount)
+    {
+        this->discount = discount;
+
+    }
+    float get_discount()
+    {
+        if (discount < 0 || discount >100)
+            cout << "Discountul poate fi intre 0 si 100";
+        else
+            return discount;
+    }
+
+    //Suprascriere "=="
+    bool operator==(Produs& p)//operator pentru testarea egalitatii
+    {
+        if (this->id == p.id)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    //adaugare_cos
+    int** adaugare_cos()
+    {
+        x = 0;
+        int i = 0;
+        int ok = 1;
+        int** v = new int* [101];
+
+        while (ok)
+        {
+            v[i] = new int[2];
+            cout << "Introduce-ti id-ul produsului: ";
+
+            for (int j = 0; j < 2; j++) {
+                if (j == 1)
+                    cout << "Introduceti numarul de obiecte pe care doriti sa le cumparati: ";
+                cin >> v[i][j];
+                if (j == 0)
+                    if (v[i][j] < 1000)
+                    {
+                        cout << "Produsul trebuie sa aiba minimum id 1000. Ti-am golit cosul de cumparaturi. " << endl;
+                        return 0;
+
+                    }
+                if (j == 1)
+                    if (v[i][j] < 1) {
+                        cout << "Cantitatea cumparata trebuie sa fie minimum 1. Ti-am golit cosul de cumparaturi." << endl;
+                        return 0;
+                    }
+            }
+
+            cout << "Doriti sa mai adaugati produse?" << endl;
+            cout << "1-da" << endl;
+            cout << "0-nu" << endl;
+            cin >> ok;
+            if (ok == 1)
+            {
+                i++;
+                x++;
+            }
+            else if (ok == 0)
+            {
+                x++;
+
+            }
+            else
+            {
+                cout << "EROARE!";
+                return 0;
+            }
+
+
+        }
+        return v;
+    };
+
+    void vizualizare_cos(int** a)
+    {
+        int i, j;
+        for (i = 0; i < x; i++)
+        {
+
+            for (j = 0; j < 2; j++)
+                if (j == 0)
+                {
+                    cout << "Id-ul produsului este: ";
+                    cout << a[i][j] << ' ';
+                }
+                else if (j == 1)
+                {
+                    cout << "Nr produse in cos: ";
+                    cout << a[i][j] << ' ';
+                }
+            cout << endl;
+        }
+    };
+
+    void istoric_cos(int** a)
+    {
+        int i, j;
+        for (i = 0; i < x; i++)
+        {
+
+            for (j = 0; j < 2; j++)
+                if (j == 0)
+                {
+                    ic << "Id-ul produsului este: ";
+                    ic << a[i][j] << ' ';
+                }
+                else if (j == 1)
+                {
+                    ic << "Nr produse in cos: ";
+                    ic << a[i][j] << ' ';
+                }
+            ic << endl;
+        }
+    };
+
+
+};
+
+class Chitara:public Produs
+{
+    int id = 1001;
+    int nr_corzi;
+    string forma;
+    string firma;
+    string culoare;
+public:
+    //CONSTRUCTOR CHITARA
+
+    Chitara()
+    {
+        nr_corzi = 6;
+        forma = "Necunoscuta";
+        firma = "Necunoscuta";
+        culoare = "Necunoscuta";
+    }
+
+    Chitara(int nr_corzi, string forma,string firma, string culoare)
+    {
+        this->nr_corzi = nr_corzi;
+        this->firma = firma;
+        this->forma = forma;
+        this->culoare = culoare;
+    }
+
+    //GETTERI SI SETTERI
+
+    float get_nr_corzi()
+    {
+        return nr_corzi;
+    }
+
+    void set_nr_corzi(float nr_corzi)
+    {
+        if (nr_corzi > 0)
+        {
+            this->nr_corzi = nr_corzi;
+        }
+    }
+
+    string get_firma()
+    {
+        return firma;
+    }
+
+    void set_firma(string firma)
+    {
+        if (firma.length() > 0)
+        {
+            this->firma= firma;
+        }
+    }
+
+    string get_forma()
+    {
+        return forma;
+    }
+
+    void set_forma(string forma)
+    {
+        if (forma.length() > 0)
+        {
+            this->forma = forma;
+        }
+    }
+
+    string get_culoare()
+    {
+        return culoare;
+    }
+
+    void set_culoare(string culoare)
+    {
+        if (culoare.length() > 0)
+        {
+            this->culoare = culoare;
+        }
+    }
+
+   friend ostream& operator<<(ostream& out, Chitara c);
+
+
+
+};
+//operator de afisare chitara
+ostream& operator<<(ostream& out, Chitara c)
+{
+out << "Numar corzi: " << c.nr_corzi << endl;
+out << "Forma chitara: " << c.forma << endl;
+out << "Firma chitara: " << c.firma << endl;
+out << "Culoare chitara: " << c.culoare << endl;
+return out;
+}
+
+//operator de afisare pana
+class Pana:public Produs
+{
+    int id = 1101;
+    float grosime;
+    string culoare;
+    string model;
+public:
+    //CONSTRUCTOR PANA
+
+    Pana()
+    {
+        grosime = 0;
+        culoare = "Necunoscuta";
+        model = "Necunoscuta";
+    }
+
+    Pana(float grosime,  string culoare, string model)
+    {
+        this->grosime = grosime;
+        this->culoare = culoare;
+        this->model = model;
+    }
+    ~Pana(){}
+    //SETTERI SI GETTERI PANA
+
+    float get_grosime()
+    {
+        return grosime;
+    }
+
+    void set_grosime(float grosime)
+    {
+        if (grosime > 0)
+        {
+            this->grosime = grosime;
+        }
+    }
+
+    string get_model()
+    {
+        return model;
+    }
+
+    void set_firma(string model)
+    {
+        if (model.length() > 0)
+        {
+            this->model = model;
+        }
+    }
+
+    string get_culoare()
+    {
+        return culoare;
+    }
+
+    void set_culoare(string culoare)
+    {
+        if (culoare.length() > 0)
+        {
+            this->culoare = culoare;
+        }
+    }
+
+    friend ostream& operator<<(ostream& out, Pana p);
+};
+
+ostream& operator<<(ostream& out, Pana p)
+{
+    out << "Grosime pana: " << p.grosime << endl;
+    out << "Culoare pana: " << p.culoare << endl;
+    out << "Forma pana: " << p.model<< endl;
+    return out;
+}
+//operator de afisare husa
+class Husa:public Produs
+{
+    int id=1201;
+    string material;
+    float lungime_curea;
+    string firma;
+    int nr_buzunare;
+public:
+
+    //CONSTRUCTOR HUSA
+        Husa()
+    {
+            material = "Necunoscut";
+            lungime_curea = 0;
+            firma = "Necunoscut";
+            nr_buzunare = 0;
+    }
+
+        Husa(string material, float lungime_curea, string firma, int nr_buzunare)
+    {
+        this->material = material;
+        this->lungime_curea = lungime_curea;
+        this->firma = firma;
+        this->nr_buzunare = nr_buzunare;
+
+    }
+        ~Husa(){}
+        //SETTERI SI GETTERI HUSA
+        float get_lungime_curea()
+        {
+            return lungime_curea;
+        }
+
+        void set_lungime_curea(float lungime_curea)
+        {
+            if (lungime_curea > 0)
+            {
+                this->lungime_curea = lungime_curea;
+            }
+        }
+
+
+        string get_firma()
+        {
+            return firma;
+        }
+
+        void set_firma(string firma)
+        {
+            if (firma.length() > 0)
+            {
+                this->firma = firma;
+            }
+        }
+
+        float get_nr_buzunare()
+        {
+            return nr_buzunare;
+        }
+
+        void set_nr_buzunare(float nr_buzunare)
+        {
+            if (nr_buzunare > 0)
+            {
+                this->nr_buzunare = nr_buzunare;
+            }
+        }
+        string get_material()
+        {
+            return material;
+        }
+
+        void set_material(string material)
+        {
+            if (material.length() > 0)
+            {
+                this->material = material;
+            }
+        }
+        friend ostream& operator<<(ostream& out, Husa h);
+};
+
+ostream& operator<<(ostream& out, Husa h)
+{
+    cout << "Lungimea curelei: " << h.lungime_curea << endl;
+    cout << "Firma husei: " << h.firma << endl;
+    cout << "Numarul de buzunare al husei: " << h.nr_buzunare << endl;
+    cout << "Materialul husei: " << h.material << endl;
+    return out;
+}
+
+
+int main()
+{
+
+    Produs cc;//cc-cos cumparaturi
+    int ok,ok1=1,ok2=0;
+    int** v=NULL;
+    while (ok1)
+    {
+        cout << "Meniu principal:" << endl;
+        cout << "########################" << endl;
+        cout << "1-adauga in cos" << endl;
+        cout << "2-vizualizare cos de cumparaturi" << endl;
+        cout << "3-plasare comanda" << endl;
+        cout << "4-confirmare primire comanda" << endl;
+        cout << "5-returnare comanda(max 30 zile)" << endl;
+        cout << "6-anulare comanda" << endl;
+        cout << "7-verifica stare comanda" << endl;
+        cout << "8-EXIT" << endl;
+        cout << "########################" << endl;
+        cin >> ok;
+        switch (ok) {
+        case 1:
+            cc.set_ok(0);
+            v = cc.adaugare_cos();
+            meniu_secundar();
+            cin >> ok1;
+            ok2 = 1;
+            break;
+        case 2:
+            if (v == NULL) {
+                cout << "Cosul este gol. Adauga ceva in cos :)" << endl;
+                break;
+            }
+            cc.vizualizare_cos(v);
+            cout << endl;
+            meniu_secundar();
+            cin >> ok1;
+            break;
+             case 3:
+                 if (ok2 == 0)
+                 {
+                     cout << "Cosul este gol! Adauga ceva in cos pentru a plasa comanda :)"<<endl;
+                     break;
+                 }
+                 if (cc.get_ok() == 0)
+                 {
+                     ++cc;
+                     cout << "Comanda plasata!"<<endl;
+                 }
+                 else if (cc.get_ok() == 1)
+                     cout << "Comanda a fost deja plasata!" << endl;
+                 break;
+             case 4:
+                 if (cc.get_ok() == 0)
+                     cout << "Comanda nu este in curs de livrare. Prima data plaseaza comanda!"<<endl;
+                 else if (cc.get_ok() == 1) {
+                     ++cc;
+                     cout << "Livrarea comenzii confirmata cu succes!"<<endl;
+                     cc.istoric_cos(v);//afisare istoric in fisier extern
+                     ic << "#################################################" << endl;
+                 }
+                 break;
+             case 5:
+                 if (cc.get_ok() == 2)
+                 {
+                     --cc;
+                     --cc;
+                     cout << "Comanda returnata!"<<endl;
+                 }
+                 else if (cc.get_ok() == 1 || cc.get_ok() == 0)
+                     cout << "Nu ai confirmat livrarea comenzi!"<<endl;
+                 break;
+             case 6:
+                 if (cc.get_ok() == 2)
+                     cout << "Ai confirmat deja livrarea comenzii. Foloseste optiunea de returnare!" << endl;
+                 else if (cc.get_ok() == 0)
+                     cout << "Comanda nu a fost plasata inca!"<<endl;
+                 else if (cc.get_ok() == 1)
+                 {
+
+                     --cc;
+                     cc.set_x(0);//Stergerea cosului de cumparaturi din memorie
+                     cout << "Comanda anulata"<<endl;
+
+                 }
+                     break;
+
+             case 7:
+                 cout << "Comanda este: " << cc.get_stare_comanda()<<endl;
+                 break;
+             case 8:
+                 cout << "Va mai asteptam in magazinul nostru :)";
+                 ok1 = 0;
+                 break;
+        };
+
+    };
+return 0;
+}
